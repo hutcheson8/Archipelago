@@ -18,7 +18,12 @@ from .LogicCSV.LogicCSVToPython import data_csv_tag
 #from .LogicCSV.locations_generated import location_rows
 #from .LogicCSV.regions_generated import region_rows
 #from .LogicCSV.resources_generated import resource_rows
-from .LogicCSV.regions_generated2 import region_rows,item_rows,location_rows,resource_rows,rr_entrances,re_entrances,ee_entrances,rm_entrances,me_entrances,sub_quests,quests,non_quests,training_methods,non_monster_drops,monster_drops,mm_entrances,skill_names,task_macros
+from .LogicCSV.regions_generated2 import region_rows,resource_rows
+from .LogicCSV.items_generated2 import item_rows
+from .LogicCSV.locations_generated2 import location_rows, sub_quests, quests, non_quests, training_methods
+from .LogicCSV.entrances_generated2 import rr_entrances,re_entrances,ee_entrances,rm_entrances,me_entrances, mm_entrances
+from .LogicCSV.monsters_generated2 import monster_drops, non_monster_drops
+from .LogicCSV.macros_generated2 import skill_names, task_macros
 from .Regions import RegionRow, ResourceRow, DropElement, MonsterRow, RuleElement, RewardElement, LocationRow, EntranceRow, TrainingRow
 
 from typing import Callable, Counter
