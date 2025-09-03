@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 from Options import Choice, Toggle, DefaultOnToggle, Range, NamedRange, PerGameCommonOptions,FreeText,Visibility,OptionDict,LocationSet
-from .LogicCSV.regions_generated2 import skill_names
+from .LogicCSV.macros_generated2 import skill_names
 from schema import Schema,Optional,And
 
 MAX_COMBAT_TASKS = 16

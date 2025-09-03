@@ -19,7 +19,7 @@ from .LogicCSV.LogicCSVToPython import data_csv_tag
 #from .LogicCSV.regions_generated import region_rows
 #from .LogicCSV.resources_generated import resource_rows
 from .LogicCSV.regions_generated2 import region_rows,resource_rows
-from .LogicCSV.items_generated2 import item_rows
+from .LogicCSV.items_generated2 import item_rows, rollable_chunks
 from .LogicCSV.locations_generated2 import location_rows, sub_quests, quests, non_quests, training_methods
 from .LogicCSV.entrances_generated2 import rr_entrances,re_entrances,ee_entrances,rm_entrances,me_entrances, mm_entrances
 from .LogicCSV.monsters_generated2 import monster_drops, non_monster_drops
@@ -93,12 +93,8 @@ class OSRSWorld(RuleWorldMixin, World):
             self.options.disable_chunk_culling.value = True #don't cull in UT, this is fine because UT doens't do fill
             self.options.disable_task_culling.value = True 
 
-        if self.options.starting_area.value == "any_chunk":
-            self.starting_area_item = "Area: Lumbridge Castle"
-            #not currently supported (need to exclude quest/item locked chunks)
-        elif self.options.starting_area.value == "any_bank":
-            self.starting_area_item = "Area: Lumbridge Castle"
-            #not currently supported (need to exclude quest/item locked chunks)
+        if self.options.starting_area.value in rollable_chunks:
+            self.starting_area_item = self.random.choice(rollable_chunks[self.options.starting_area.value])
         else:
             starting_area_name = f"Area: {self.options.starting_area.value}"
 

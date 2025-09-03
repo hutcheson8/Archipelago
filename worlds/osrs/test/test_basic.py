@@ -3,7 +3,9 @@ from rule_builder import *
 from worlds.osrs import *
 import unittest
 from ..Options import MaxDropRate, FullMaxDropRate, DisableChunkCulling
-from ..LogicCSV.regions_generated2 import location_rows, sub_quests, region_rows, resource_rows, monster_drops
+from ..LogicCSV.regions_generated2 import region_rows, resource_rows 
+from ..LogicCSV.locations_generated2 import location_rows, sub_quests
+from ..LogicCSV.monsters_generated2 import monster_drops
 
 class FullTests(OSRSTestBase):
     run_default_tests = False  # type: ignore
