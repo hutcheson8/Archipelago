@@ -573,7 +573,7 @@ class OSRSWorld(RuleWorldMixin, World):
         return "Area: Nothing :("
 
     def create_location(self, location_row:LocationRow):
-        if location_row.category == "goal" or location_row.category == "subquest":
+        if location_row.category == "goal" or location_row.category == "subquest" or location_row.category == "event":
             location_id = None
         elif location_row.name not in self.location_name_to_id:
             print(location_row.name)
@@ -601,7 +601,7 @@ class OSRSWorld(RuleWorldMixin, World):
         location.parent_region = region
         region.locations.append(location)
 
-        if location_row.category == "subquest":
+        if location_row.category == "subquest" or location_row.category == "event":
             location.show_in_spoiler = False
             location.place_locked_item(self.create_event(location_row.name))
         else:

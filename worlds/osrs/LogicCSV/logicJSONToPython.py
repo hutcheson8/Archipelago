@@ -1142,7 +1142,9 @@ with open(os.path.join(this_dir, "chunkpicker-chunkinfo-export.json"), 'r') as l
                     kudos_reward = int(task_data["Kudos"])
                 if "Description" in task_data:
                     description = task_data["Description"]
-                if "ConnectsSections" not in task_data and "UnlocksArea" not in task_data: #don't make these as locations
+                if task_type == "Nonskill" and "Chunks" in task_data and len(task_data) == 1: #If it's just a chunk it's a task macro, blame source
+                    sub_quest_list.append(LocationRow(task_name,"event",parent_region,"",rule_list,kudos_reward,0,0))
+                elif "ConnectsSections" not in task_data and "UnlocksArea" not in task_data: #don't make these as locations
                     non_quest_list.append(LocationRow(task_name,task_type,parent_region,"",rule_list,kudos_reward,0,0))
                     non_quest_names.append(task_name)
                 for field in task_data.keys():
@@ -1403,7 +1405,7 @@ with open(os.path.join(this_dir, "regions_generated2.py"), "w+") as regPyFile:
                 row_line += ","
                 row_line += str_format(location_row.parent_region)
                 row_line += ","
-                row_line += str_format(quest_row.description)
+                row_line += str_format(location_row.description)
                 row_line += ","
                 row_line += str_rules(location_row.rule)
                 row_line += ","
