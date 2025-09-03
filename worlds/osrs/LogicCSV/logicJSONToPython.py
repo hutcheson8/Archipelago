@@ -223,6 +223,7 @@ me_entrances: list[EntranceRow] = []
 mm_entrances: list[EntranceRow] = []
 
 task_macros: dict[str,list[str]] = {}
+rollable_chunks: dict[str,list[str]] = {}
 
 task_unlock_item: dict[str,list[RuleElement]] = {}
 task_unlock_drops: dict[str,dict[str,list[RuleElement]]] = {}
@@ -247,8 +248,6 @@ defered_region_connections: list[tuple[str,str]] = []
 # todo : fix implied telegrab e.g. ardougne zoo jogre
 
 monster_rows.append(MonsterRow("kill_Monster[+]","Macro",[]))
-
-regions["Nothing :("] = "Nothing :("
 
 item_csv_rows = []
 
@@ -1249,13 +1248,13 @@ with open(os.path.join(this_dir, "items_generated2.py"), "w+") as regPyFile:
             regPyFile.write("\n")
             regPyFile.write("item_rows: list[ItemRow] = [\n")
 
+
+            regPyFile.write("\tItemRow(\'Area: Nothing :(\', 0, ItemClassification.filler,\'Nothing :(\'),\n")
+            item_csv_rows.append(["\'Area: Nothing :(\'","0","filler","Area","Nothing :("])
             for region_name, chunk_id in regions.items():
                 row_line = "ItemRow("
                 row_line += str_format("Area: "+region_name)
-                if region_name != "Nothing :(":
-                    row_line += ", 1, ItemClassification.progression,"
-                else:
-                    row_line += ", 0, ItemClassification.filler,"
+                row_line += ", 1, ItemClassification.progression,"
                 row_line += str_format(chunk_id)
                 row_line += ")"
                 regPyFile.write(f"\t{row_line},\n")
