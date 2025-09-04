@@ -6,7 +6,7 @@ from .LogicCSV.macros_generated2 import skill_names
 from .LogicCSV.items_generated2 import rollable_chunks
 from schema import Schema,Optional,And
 
-MAX_COMBAT_TASKS = 16
+MAX_COMBAT_TASKS = 17
 
 MAX_PRAYER_TASKS = 5
 MAX_MAGIC_TASKS = 7

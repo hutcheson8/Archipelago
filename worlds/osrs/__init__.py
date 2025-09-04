@@ -4,6 +4,7 @@ from BaseClasses import Item, Tutorial, ItemClassification, Region, MultiWorld, 
 from rule_builder import *
 from Fill import fill_restrictive, FillError
 from worlds.AutoWorld import WebWorld, World
+from Options import OptionError
 from .Items import OSRSItem, starting_area_dict, chunksanity_starting_chunks, QP_Items, ItemRow, \
     chunksanity_special_region_names
 from .Locations import OSRSLocation
@@ -37,7 +38,7 @@ class OSRSWeb(WebWorld):
         "Multiworld Setup Guide",
         "A guide to setting up the Old School Runescape Randomizer connected to an Archipelago Multiworld",
         "English",
-        "docs/setup_en.md",
+        "setup_en.md",
         "setup/en",
         ["digiholic"]
     )
