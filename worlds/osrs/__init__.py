@@ -113,6 +113,12 @@ class OSRSWorld(RuleWorldMixin, World):
             if "Complete the" in loc_name:
                 loc_name,_ = loc_name.split(" Complete the",2) #Get just the name of the diary/quest
                 partial_names.append(loc_name) #we're going to look for them later
+            elif loc_name in self.location_name_groups:
+                for sub_loc_name in self.location_name_groups[loc_name]:
+                    if "Complete the" in loc_name:
+                        loc_name,_ = loc_name.split(" Complete the",2) #Get just the name of the diary/quest
+                        partial_names.append(loc_name) #we're going to look for them later
+                    self.pre_completed_locations.append(sub_loc_name)
             else:
                 self.pre_completed_locations.append(loc_name) #if it's not something with sub-tasks, just add it directly
         for loc_name in self.location_name_to_row.keys():
@@ -396,6 +402,8 @@ class OSRSWorld(RuleWorldMixin, World):
                 if rule_list is not None: self.set_rule(entrance,rule_list)
 
         for location_row in location_rows:
+            if location_row.name in self.pre_completed_locations or location_row.name in self.options.exclude_locations:
+                continue
             if location_row.rule:
                 location = self.multiworld.get_location(location_row.name,self.player)
                 fake_location = self.multiworld.get_location(location_row.name+" event",self.player)
@@ -419,6 +427,8 @@ class OSRSWorld(RuleWorldMixin, World):
                     if rule is not None:
                         self.set_rule(qp_loc,rule)
         for location_row in sub_quests:
+            if location_row.name in self.pre_completed_locations or location_row.name in self.options.exclude_locations:
+                continue
             if location_row.rule:
                 location = self.multiworld.get_location(location_row.name,self.player)
                 rule = self.generate_lambda(location_row.rule)
@@ -587,7 +597,7 @@ class OSRSWorld(RuleWorldMixin, World):
             exit()
         else:
             location_id = self.location_name_to_id[location_row.name]
-        if location_row.name in self.pre_completed_locations or location_row.name in self.options.exclude_locations:
+        if location_row.name in self.pre_completed_locations:
             #Don't do most of this, just add the events to precollected :)
             self.push_precollected(self.create_event(location_row.name))
             if location_row.quest_point_reward>0:
@@ -597,6 +607,8 @@ class OSRSWorld(RuleWorldMixin, World):
             if location_row.combat_point_reward > 0:
                 self.push_precollected(self.create_event(f"CombatPoints {location_row.combat_point_reward} ({location_row.name})"))
             return
+        if location_row.name in self.options.exclude_locations:
+            return #don't do ANY of this
 
         location = OSRSLocation(self.player,location_row.name,location_id)
         self.location_name_to_data[location_row.name] = location
