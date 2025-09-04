@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from Options import Choice, Toggle, DefaultOnToggle, Range, NamedRange, PerGameCommonOptions,FreeText,Visibility,OptionDict,LocationSet
+from Options import Choice, Toggle, DefaultOnToggle, Range, NamedRange, PerGameCommonOptions,FreeText,Visibility,OptionDict,LocationSet,TextChoice
 from .LogicCSV.macros_generated2 import skill_names
+from .LogicCSV.items_generated2 import rollable_chunks
 from schema import Schema,Optional,And
 
 MAX_COMBAT_TASKS = 16
@@ -21,15 +22,31 @@ MAX_WOODCUTTING_TASKS = 3
 NON_QUEST_LOCATION_COUNT = 49
 
 
-class StartingArea(FreeText):
-    """
-    Which chunks are available at the start. The player may need to move through locked chunks to reach the starting
-    area, but any areas that require quests, skills, or coins are not available as a starting location.
+#class StartingArea(TextChoice):
+#    """
+#    Which chunks are available at the start. The player may need to move through locked chunks to reach the starting
+#    area, but any areas that require quests, skills, or coins are not available as a starting location.
 
-    NOTE: MEMBERS LOGIC ISSUE: WE DON'T ACTUALLY CARE ABOUT WHAT YOUR START COULD BE HAVE FUN!
-    """
-    display_name = "Starting Region"
-    default = "Lumbridge Castle"
+#    NOTE: MEMBERS LOGIC ISSUE: WE DON'T ACTUALLY CARE ABOUT WHAT YOUR START COULD BE HAVE FUN!
+#    """
+#    display_name = "Starting Region"
+#    default = "Lumbridge Castle"
+#    option_
+
+locations = {"option_" + start: i for i, start in enumerate(rollable_chunks.keys())}
+# This way the dynamic start names are picked up by the MetaClass Choice belongs to
+StartingArea = type("StartingArea", (TextChoice,), {
+    "__module__": __name__,
+    "display_name": "Starting Region",
+    "default":"Lumbridge Castle",
+    "__doc__": """Which chunks are available at the start. The player may need to move through locked chunks to reach the starting
+               area, but any areas that require quests, skills, or coins are not available as a starting location
+               
+               NOTE: MEMBERS LOGIC ISSUE: WE DON'T ACTUALLY CARE ABOUT WHAT YOUR START COULD BE HAVE FUN!""",
+    **locations,
+})
+del (locations)
+
 class GoalLocation(FreeText):
     """
     Which location name to consider to be the goal.

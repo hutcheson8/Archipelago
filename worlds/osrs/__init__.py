@@ -60,11 +60,19 @@ class OSRSWorld(RuleWorldMixin, World):
     web = OSRSWeb()
     base_id = base_id
     data_version = 1
-    rule_caching_enabled = False
+    rule_caching_enabled = True
+
+    location_rows_by_category:dict[str,list[LocationRow]] = {}
+    for location_row in location_rows:
+        if location_row.category not in location_rows_by_category:
+            location_rows_by_category[location_row.category] = []
+        location_rows_by_category[location_row.category].append(location_row)
 
     item_name_to_id = {item_rows[i].name: base_id + i for i in range(len(item_rows))}
     location_name_to_id = {location_rows[i].name: base_id + i for i in range(len(location_rows))}
     item_mapping = {f"Training_{skill_name}_{level}":f"Training_{skill_name}" for level in range(1,100) for skill_name in skill_names}
+    item_name_groups = { macro_name: set(item_list) for macro_name, item_list in rollable_chunks.items()}
+    location_name_groups = { category : set([location_row.name for location_row in location_rs]) for category, location_rs in location_rows_by_category.items()}
 
     region_name_to_data: typing.Dict[str, Region]
     location_name_to_data: typing.Dict[str, OSRSLocation]
@@ -72,9 +80,6 @@ class OSRSWorld(RuleWorldMixin, World):
     location_name_to_row: ClassVar[dict[str,LocationRow]] = {loc_row.name:loc_row for loc_row in (location_rows+sub_quests)}
     region_code_to_name: ClassVar[dict[str,str]] = {reg_row.id:reg_row.name for reg_row in region_rows}
 
-    starting_area_item: str
-
-    available_QP_locations: typing.List[str]
 
     def __init__(self, multiworld: MultiWorld, player: int):
         super().__init__(multiworld, player)
@@ -83,7 +88,7 @@ class OSRSWorld(RuleWorldMixin, World):
 
         self.starting_area_item = ""
 
-        self.available_QP_locations = []
+        self.available_QP_locations: typing.List[str] = []
         self.pre_completed_locations = []
         self.items_already_created = 0
 
@@ -555,8 +560,7 @@ class OSRSWorld(RuleWorldMixin, World):
                         break
                     if locations_created <= items_created:
                         break #Exit early if we've already removed enough
-            logger.error(f"{maximum_locations-locations_created} deleted")
-            logger.error(f"{locations_created - items_created} left")
+            logger.error(f"delted {maximum_locations-locations_created} filler from {self.player_name}, {locations_created - items_created} remains")
 
         #visualize_regions(self.region_name_to_data["chunk_11937"],"osrs_regions.puml",show_locations=False,show_entrance_names=False,show_other_regions=False)
 
