@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from Options import Choice, Toggle, DefaultOnToggle, Range, NamedRange, PerGameCommonOptions,FreeText,Visibility,OptionDict,LocationSet,TextChoice
+from Options import Choice, Toggle, DefaultOnToggle, Range, NamedRange, PerGameCommonOptions,FreeText,Visibility,OptionDict,LocationSet,TextChoice, OptionSet
 from .LogicCSV.macros_generated2 import skill_names
 from .LogicCSV.items_generated2 import rollable_chunks
 from schema import Schema,Optional,And
@@ -184,6 +184,15 @@ class PreCompletedTasks(LocationSet):
     Useful for cases where you need a quest to get to your starting area
     """
     display_name = "Pre-Completed Tasks"
+
+class BannedChunks(OptionSet):
+    """
+    A list of chunks that won't be created as part of generation
+    
+    Uses internal names (e.g. "chunk_12338" not "South Draynor")
+    But does count all sub-chunks (so you can just enter "chunk_8496" rather then "chunk_8496-1")
+    """
+    display_name = "Banned Chunks"
 
 class BrutalGrinds(Toggle):
     """
@@ -573,6 +582,7 @@ class OSRSOptions(PerGameCommonOptions):
     base_training_levels: BaseTrainingLevels
     tutorial_island_items: StartWithTutorialIsland
     pre_completed_tasks: PreCompletedTasks
+    banned_chunks: BannedChunks
     brutal_grinds: BrutalGrinds
     progressive_tasks: ProgressiveTasks
     enable_duds: EnableDuds

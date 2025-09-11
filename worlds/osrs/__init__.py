@@ -75,8 +75,6 @@ class OSRSWorld(RuleWorldMixin, World):
     item_name_groups = { macro_name: set(item_list) for macro_name, item_list in rollable_chunks.items()}
     location_name_groups = { category : set([location_row.name for location_row in location_rs]) for category, location_rs in location_rows_by_category.items()}
 
-    region_name_to_data: typing.Dict[str, Region]
-    location_name_to_data: typing.Dict[str, OSRSLocation]
     item_rows_by_name: typing.ClassVar[dict[str, ItemRow]] = {it_row.name: it_row for it_row in item_rows}
     location_name_to_row: ClassVar[dict[str,LocationRow]] = {loc_row.name:loc_row for loc_row in (location_rows+sub_quests)}
     region_code_to_name: ClassVar[dict[str,str]] = {reg_row.id:reg_row.name for reg_row in region_rows}
@@ -84,8 +82,8 @@ class OSRSWorld(RuleWorldMixin, World):
 
     def __init__(self, multiworld: MultiWorld, player: int):
         super().__init__(multiworld, player)
-        self.region_name_to_data = {}
-        self.location_name_to_data = {}
+        self.region_name_to_data: typing.Dict[str, Region] = {}
+        self.location_name_to_data: typing.Dict[str, OSRSLocation] = {}
 
         self.starting_area_item = ""
 
@@ -105,6 +103,13 @@ class OSRSWorld(RuleWorldMixin, World):
             starting_area_name = f"Area: {self.options.starting_area.value}"
 
             self.starting_area_item = starting_area_name if starting_area_name in self.item_name_to_id else "Area: Lumbridge Castle"
+
+        defered_banned_chunks:set[str] = set()
+        region_codes = self.region_code_to_name.keys()
+        for chunk_id in self.options.banned_chunks:
+            if chunk_id not in region_codes:
+                defered_banned_chunks |= {code for code in region_codes if (chunk_id+"-") in code}
+        self.options.banned_chunks.value |= defered_banned_chunks
 
         self.multiworld.push_precollected(self.create_item(self.starting_area_item))
 
@@ -207,7 +212,8 @@ class OSRSWorld(RuleWorldMixin, World):
         menu_region = self.create_region("Menu")
 
         for region_row in region_rows:
-            self.create_region(region_row.id) #id is the name of the region, name is the name of the item that unlocks it
+            if region_row.id not in self.options.banned_chunks:
+                self.create_region(region_row.id) #id is the name of the region, name is the name of the item that unlocks it
 
         for resource_row in resource_rows:
             self.create_region(resource_row.name)
@@ -247,6 +253,8 @@ class OSRSWorld(RuleWorldMixin, World):
         rr_entrances_cache_miss: list[str] = []
 
         for entrance in rr_entrances: #Region to Region connections
+            if entrance.source in self.options.banned_chunks or entrance.dest in self.options.banned_chunks:
+                continue
             sourceRegion = self.region_name_to_data[entrance.source]
             destRegion = self.region_name_to_data[entrance.dest]
             entrance_name = f"{sourceRegion.name} -> {destRegion.name}"
@@ -272,6 +280,8 @@ class OSRSWorld(RuleWorldMixin, World):
         re_entrances_cache_miss: list[str] = []
 
         for entrance in re_entrances: #Region to rEsource connections
+            if entrance.source in self.options.banned_chunks:
+                continue
             if entrance.source == "Starting Items":
                 if self.options.tutorial_island_items.value:
                     sourceRegion = self.region_name_to_data["Menu"]
@@ -350,6 +360,8 @@ class OSRSWorld(RuleWorldMixin, World):
                 self.set_rule(entrance,rules[0])
 
         for entrance in rm_entrances: #Region to Monster connections
+            if entrance.source in self.options.banned_chunks:
+                continue
             sourceRegion = self.region_name_to_data[entrance.source]
             destRegion = self.region_name_to_data[entrance.dest]
             entrance_obj = sourceRegion.connect(destRegion,None)
@@ -404,6 +416,8 @@ class OSRSWorld(RuleWorldMixin, World):
         for location_row in location_rows:
             if location_row.name in self.pre_completed_locations or location_row.name in self.options.exclude_locations:
                 continue
+            if location_row.parent_region in self.options.banned_chunks:
+                continue
             if location_row.rule:
                 location = self.multiworld.get_location(location_row.name,self.player)
                 fake_location = self.multiworld.get_location(location_row.name+" event",self.player)
@@ -429,6 +443,8 @@ class OSRSWorld(RuleWorldMixin, World):
         for location_row in sub_quests:
             if location_row.name in self.pre_completed_locations or location_row.name in self.options.exclude_locations:
                 continue
+            if location_row.parent_region in self.options.banned_chunks:
+                continue
             if location_row.rule:
                 location = self.multiworld.get_location(location_row.name,self.player)
                 rule = self.generate_lambda(location_row.rule)
@@ -443,6 +459,8 @@ class OSRSWorld(RuleWorldMixin, World):
                 if location_row.kudos_reward > 0:
                     raise Exception("This shouldn't happen but i want to know if it does "+location_row.name)
         for training_method in training_methods:
+            if training_method.parent_region in self.options.banned_chunks:
+                continue
             if training_method.rule:
                 method = self.get_location(f"Training {training_method.skill_name}: {training_method.task_name}")
                 rule = self.generate_lambda(training_method.rule)
@@ -468,7 +486,18 @@ class OSRSWorld(RuleWorldMixin, World):
         temp_state.sweep_for_advancements()
         temp_state.update_reachable_regions(self.player)
 
+
+
         if not self.multiworld.completion_condition[self.player](temp_state):
+            max_trained_levels:dict[str, int] = {}
+            for item in temp_state.prog_items[self.player].keys():
+                if item.startswith("Training_"):
+                    _,skill,level = item.split("_",3)
+                    if skill in max_trained_levels:
+                        max_trained_levels[skill] = max(max_trained_levels[skill],int(level))
+                    else:
+                        max_trained_levels[skill] = int(level)
+            logger.error(max_trained_levels)
             raise OptionError("Game isn't beatable with current settings")
 
         if not self.options.disable_chunk_culling:
@@ -571,7 +600,7 @@ class OSRSWorld(RuleWorldMixin, World):
                         break
                     if locations_created <= items_created:
                         break #Exit early if we've already removed enough
-            logger.error(f"delted {maximum_locations-locations_created} filler from {self.player_name}, {locations_created - items_created} remains")
+            logger.error(f"Deleted {maximum_locations-locations_created} filler from {self.player_name}, {locations_created - items_created} remains")
 
         #visualize_regions(self.region_name_to_data["chunk_11937"],"osrs_regions.puml",show_locations=False,show_entrance_names=False,show_other_regions=False)
 
@@ -589,14 +618,6 @@ class OSRSWorld(RuleWorldMixin, World):
         return "Area: Nothing :("
 
     def create_location(self, location_row:LocationRow):
-        if location_row.category == "goal" or location_row.category == "subquest" or location_row.category == "event":
-            location_id = None
-        elif location_row.name not in self.location_name_to_id:
-            print(location_row.name)
-            breakpoint()
-            exit()
-        else:
-            location_id = self.location_name_to_id[location_row.name]
         if location_row.name in self.pre_completed_locations:
             #Don't do most of this, just add the events to precollected :)
             self.push_precollected(self.create_event(location_row.name))
@@ -607,6 +628,16 @@ class OSRSWorld(RuleWorldMixin, World):
             if location_row.combat_point_reward > 0:
                 self.push_precollected(self.create_event(f"CombatPoints {location_row.combat_point_reward} ({location_row.name})"))
             return
+        if location_row.parent_region in self.options.banned_chunks:
+            return
+        if location_row.category == "goal" or location_row.category == "subquest" or location_row.category == "event":
+            location_id = None
+        elif location_row.name not in self.location_name_to_id:
+            print(location_row.name)
+            breakpoint()
+            exit()
+        else:
+            location_id = self.location_name_to_id[location_row.name]
         if location_row.name in self.options.exclude_locations:
             return #don't do ANY of this
 
@@ -654,6 +685,8 @@ class OSRSWorld(RuleWorldMixin, World):
             region.locations.append(qp_loc)
     
     def create_training(self, training_row:TrainingRow):
+        if training_row.parent_region in self.options.banned_chunks:
+            return
         parent_region = self.get_region(training_row.parent_region)
         method = OSRSLocation(self.player,f"Training {training_row.skill_name}: {training_row.task_name}",None,parent_region)
         if training_row.task_name == "Unlock ~|Herblore|~ after Druidic Ritual": #We don't want to be herblore 10 etc after druidic ritual

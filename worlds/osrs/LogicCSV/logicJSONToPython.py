@@ -185,7 +185,7 @@ banned_chunks: list[str] = [
     "chunk_13721","chunk_14653","chunk_14654","chunk_14909","chunk_14910","chunk_14999","chunk_15000","chunk_15001","chunk_15255","chunk_15256",
     "chunk_15257","chunk_15511","chunk_15512","chunk_15513","chunk_15262","chunk_15263","chunk_15515","chunk_11605","chunk_13197","chunk_11595",
     "chunk_7257","chunk_4759","chunk_5022","chunk_5023","chunk_5278","chunk_5535","chunk_5536","chunk_12633","chunk_11085","chunk_11341","chunk_11597",
-    "chunk_10821","chunk_10822","chunk_10823","chunk_11077","chunk_11078","chunk_11079"
+    "chunk_10821","chunk_10822","chunk_10823","chunk_11077","chunk_11078","chunk_11079","chunk_5267"
 ]
 
 banned_drop_items:list[str]=[

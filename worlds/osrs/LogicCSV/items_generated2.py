@@ -51,7 +51,6 @@ item_rows: list[ItemRow] = [
 	ItemRow('Area: Keith\'s House', 1, ItemClassification.progression,'chunk_5178'),
 	ItemRow('Area: Mount Karuulm', 1, ItemClassification.progression,'chunk_5179'),
 	ItemRow('Area: North Mount Karuulm', 1, ItemClassification.progression,'chunk_5180'),
-	ItemRow('Area: Tonali Cavern', 1, ItemClassification.progression,'chunk_5267'),
 	ItemRow('Area: Dragon Nest', 1, ItemClassification.progression,'chunk_5268'),
 	ItemRow('Area: Lizardman Caves', 1, ItemClassification.progression,'chunk_5275'),
 	ItemRow('Area: Lizardman Temple', 1, ItemClassification.progression,'chunk_5277'),
