@@ -158,6 +158,8 @@ class OSRSWorld(RuleWorldMixin, World):
             assert level.isdigit()
             if self.options.maximum_training_levels.get(skill,Options.MaxTrainingLevel.default) < int(level):
                 return False_() #skill is outside of the maximum level
+            if self.options.starting_skill_levels.get(skill,Options.StartingLevels.default) > int(level):
+                return True_()
             if int(level) <= 1: return None
             if skill in ("Attack","Strength","Defence","Prayer","Hitpoints","Combat"):
                 return And(SafeCanReachRegion("kill_Monster[+]"),Has("Quest Point",(int(level)-1)*2))

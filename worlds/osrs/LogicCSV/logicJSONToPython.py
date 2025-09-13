@@ -546,6 +546,7 @@ with open(os.path.join(this_dir, "chunkpicker-chunkinfo-export.json"), 'r') as l
             loc_list.append(loc)
         task_macros[macro_name] = loc_list
     for macro_name, macro_list in exportedJSON["codeItems"]["chunksPlus"].items():
+        original_macro_name = macro_name
         macro_name = convert_chunk_id(macro_name)
         if macro_name not in chunks:
             chunk = {"Chunk_Name":None,"Contents":[]}
@@ -559,7 +560,7 @@ with open(os.path.join(this_dir, "chunkpicker-chunkinfo-export.json"), 'r') as l
                     continue
                 else:
                     sub_chunk = sub_chunk + "-1"
-            if sub_chunk in bidirectional_groups:
+            if original_macro_name in bidirectional_groups:
                 sub_chunk_name = chunks[sub_chunk]["Chunk_Name"]
                 if sub_chunk_name:
                     rr_entrances.append(EntranceRow(macro_name,sub_chunk,[RuleElement("has",f"Area: {sub_chunk_name}")]))
