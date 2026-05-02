@@ -2738,8 +2738,8 @@ async def main(args: argparse.Namespace):
 
     await ctx.server
     console_task = asyncio.create_task(console(ctx))
-    if ctx.auto_shutdown:
-        ctx.shutdown_task = asyncio.create_task(auto_shutdown(ctx, [console_task]))
+#   if ctx.auto_shutdown:
+#       ctx.shutdown_task = asyncio.create_task(auto_shutdown(ctx, [console_task]))
 
     def stop():
         try:
