@@ -337,7 +337,7 @@ def run_server_process(name: str, ponyconfig: dict, static_server_data: dict,
                     setattr(asyncio.current_task(), "save", lambda: ctx._save(True))
                 assert ctx.shutdown_task is None
 #               ctx.shutdown_task = asyncio.create_task(auto_shutdown(ctx, []))
-                await ctx.shutdown_task
+#               await ctx.shutdown_task
 
             except (KeyboardInterrupt, SystemExit):
                 if ctx.saving:
