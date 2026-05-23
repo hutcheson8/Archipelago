@@ -16,15 +16,15 @@ from Utils import is_windows
 from .CMDProcessor import KH2CommandProcessor
 from .Socket import KH2Socket, MessageType
 from .WorldLocations import *
-from worlds.kh2 import item_dictionary_table, exclusion_item_table, CheckDupingItems, all_locations, exclusion_table, \
+from worlds.kh2_beta import item_dictionary_table, exclusion_item_table, CheckDupingItems, all_locations, exclusion_table, \
     SupportAbility_Table, ActionAbility_Table, all_weapon_slot, Summon_Checks, popups_set
-from worlds.kh2.Names import ItemName
+from worlds.kh2_beta.Names import ItemName
 from .SendChecks import finishedGame
 
 
 class KH2Context(CommonContext):
     command_processor = KH2CommandProcessor
-    game = "Kingdom Hearts 2"
+    game = "Kingdom Hearts 2 Beta"
     items_handling = 0b111  # Indicates you get items sent from other worlds.
 
     def __init__(self, server_address, password):
@@ -252,14 +252,14 @@ class KH2Context(CommonContext):
             self.all_party_abilities = {**self.kh2slotdata["SoraAbilities"], **self.kh2slotdata["DonaldAbilities"], **self.kh2slotdata["GoofyAbilities"]}
 
             self.kh2_data_package = Utils.load_data_package_for_checksum(
-                    "Kingdom Hearts 2", self.checksums["Kingdom Hearts 2"])
+                    "Kingdom Hearts 2 Beta", self.checksums["Kingdom Hearts 2 Beta"])
 
             if "location_name_to_id" in self.kh2_data_package:
                 self.data_package_kh2_cache(
                         self.kh2_data_package["location_name_to_id"], self.kh2_data_package["item_name_to_id"])
                 self.connect_to_game()
             else:
-                asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": ["Kingdom Hearts 2"]}]))
+                asyncio.create_task(self.send_msgs([{"cmd": "GetDataPackage", "games": ["Kingdom Hearts 2 Beta"]}]))
 
             if self.kh2connectionconfirmed:
                 self.send_slot_data_event.set()
@@ -339,10 +339,10 @@ class KH2Context(CommonContext):
                         self.checked_chests.add(location)
 
         if cmd == "DataPackage":
-            if "Kingdom Hearts 2" in args["data"]["games"]:
+            if "Kingdom Hearts 2 Beta" in args["data"]["games"]:
                 self.data_package_kh2_cache(
-                        args["data"]["games"]["Kingdom Hearts 2"]["location_name_to_id"],
-                        args["data"]["games"]["Kingdom Hearts 2"]["item_name_to_id"])
+                        args["data"]["games"]["Kingdom Hearts 2 Beta"]["location_name_to_id"],
+                        args["data"]["games"]["Kingdom Hearts 2 Beta"]["item_name_to_id"])
                 self.connect_to_game()
                 asyncio.create_task(self.send_msgs([{"cmd": "Sync"}]))
 

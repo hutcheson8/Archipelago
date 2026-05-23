@@ -15,7 +15,7 @@ from worlds.Files import APPlayerContainer
 
 
 class KH2Container(APPlayerContainer):
-    game: str = 'Kingdom Hearts 2'
+    game: str = 'Kingdom Hearts 2 Beta'
     patch_file_ending = ".zip"
 
     def __init__(self, patch_data: dict, base_path: str, output_directory: str,
@@ -658,11 +658,11 @@ def patch_kh2(self, output_directory):
         try:
             with zipfile.ZipFile(Utils.user_path(apworldloc), "r") as apworld_archive:
                 for mod_name, file_name in ICON_FILES.items():
-                    with apworld_archive.open(f"kh2/data/{file_name}", "r") as f:
+                    with apworld_archive.open(f"kh2_beta/data/{file_name}", "r") as f:
                         openkhmod[mod_name] = f.read()
                 if self.options.HarderAS:
                     for mod_name, file_name in SCRIPT_FILES.items():
-                        with apworld_archive.open(f"kh2/data/{file_name}", "r") as f:
+                        with apworld_archive.open(f"kh2_beta/data/{file_name}", "r") as f:
                             openkhmod[mod_name] = f.read()
         except IOError as openerror:
             logging.warning(openerror)

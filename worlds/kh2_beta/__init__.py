@@ -19,11 +19,11 @@ from itertools import chain
 
 def launch_client(*args: str):
     from .Client.Client import launch
-    launch_component(launch, name="KH2Client", args=args)
+    launch_component(launch, name="KH2ClientBeta", args=args)
 
 
 icon_paths['kh2apicon'] = f"ap:{__name__}/data/khapicon.png"
-components.append(Component("KH2 Client", func=launch_client, game_name="Kingdom Hearts 2", component_type=Type.CLIENT, icon="kh2apicon", supports_uri=True))
+components.append(Component("KH2 Client Beta", func=launch_client, game_name="Kingdom Hearts 2 Beta", component_type=Type.CLIENT, icon="kh2apicon", supports_uri=True))
 
 
 class KingdomHearts2Web(WebWorld):
@@ -43,7 +43,7 @@ class KH2World(World):
     It is the sequel to Kingdom Hearts and Kingdom Hearts: Chain of Memories, and like the two previous games,
     focuses on Sora and his friends' continued battle against the Darkness.
     """
-    game = "Kingdom Hearts 2"
+    game = "Kingdom Hearts 2 Beta"
     web = KingdomHearts2Web()
 
     required_client_version = (0, 4, 4)
