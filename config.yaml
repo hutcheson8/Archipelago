@@ -42,7 +42,7 @@ PORT: 8080
 # Database provider details:
 PONY:
   provider: "sqlite"
-  filename: "ap.db3" # This MUST be the ABSOLUTE PATH to the file.
+  filename: "/home/archipelago/Game/ap.db3" # This MUST be the ABSOLUTE PATH to the file.
   create_db: true
 
 # Maximum number of players that are allowed to be rolled on the server. After this limit, one should roll locally and upload the results.
