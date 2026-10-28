@@ -48,7 +48,6 @@ EnemizerCLI/
 /sni-*/
 /appimagetool*
 /VC_redist.x64.exe
-/host.yaml
 /options.yaml
 /logs/
 _persistent_storage.yaml
