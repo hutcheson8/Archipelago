@@ -5,7 +5,7 @@ general_options:
 # Null means nothing, for the server this means to default the value
 # These overwrite command line arguments!
 server_options:
-  host: knives-and-silk.com
+  host: null
   port: 38281
   password: null
   multidata: null
